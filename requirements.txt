@@ -1,0 +1,9 @@
+datasets
+tokenizers
+transformers
+wandb
+seqeval
+huggingface_hub
+torch
+werkzeug
+evaluate
