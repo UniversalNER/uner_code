@@ -7,3 +7,4 @@ huggingface_hub
 torch
 werkzeug
 evaluate
+accelerate
