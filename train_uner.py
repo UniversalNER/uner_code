@@ -11,7 +11,6 @@ import requests
 
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 github_token = os.environ["GITHUB_TOKEN"]
-data_url = "https://raw.githubusercontent.com/UniversalNER/UNER_English-EWT/master/en_ewt-ud-{split}.iob2"
 LABEL_NAMES = ['O', 'B-PER', 'I-PER', 'B-ORG', 'I-ORG', 'B-LOC', 'I-LOC']
 
 # download from the data_url to a local file
@@ -53,6 +52,7 @@ def compute_metrics(predictions_labels):
 
 class UNERConfig:
   # a bunch of stuff...
+  dataset_full_name = "UNER_English-EWT"
   dataset = "en_ewt-ud"
   model_name = "bert-base-multilingual-cased"
   num_epochs = 10
@@ -69,13 +69,16 @@ class UNERTrainer():
 
 
   def setup_data(self):
-    download_file(data_url.format(split="train", github_token=github_token), f'{self.config.dataset}-train.iob2')
-    download_file(data_url.format(split="dev", github_token=github_token), f'{self.config.dataset}-dev.iob2')
-    download_file(data_url.format(split="test", github_token=github_token), f'{self.config.dataset}-test.iob2')
 
     train_path = f"{self.config.dataset}-train.iob2"
     dev_path = f"{self.config.dataset}-dev.iob2"
     test_path = f"{self.config.dataset}-test.iob2"
+
+    data_url = f"https://raw.githubusercontent.com/UniversalNER/{self.config.dataset_full_name}/master"
+
+    download_file(f"{data_url}/{train_path}", train_path)
+    download_file(f"{data_url}/{dev_path}", train_path)
+    download_file(f"{data_url}/{test_path}", train_path)
 
     training_dataset = read_uner(train_path)
     validation_dataset = read_uner(dev_path)
