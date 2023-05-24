@@ -176,6 +176,44 @@ class UNERTrainer():
     print(predictions.metrics)
     return predictions.metrics["test_overall_accuracy"], predictions.metrics["test_overall_f1"]
 
+  def write_predictions(self, fname: str):
+    predictions = self.trainer.predict(self.tokenized_dataset["test"])
+    model_output = np.argmax(predictions.predictions, axis=2)
+
+    clean_predictions = []
+    for sentence, pred in zip(self.tokenized_dataset["test"], model_output):
+      num_tokens = len(sentence["labels"])
+      raw_sentence_predictions = pred[:num_tokens]
+      raw_input_ids = sentence["input_ids"]
+
+      # remove first and last
+      sentence_predictions = raw_sentence_predictions[1:-1]
+      input_ids = raw_input_ids[1:-1]
+      gold_label_ids = sentence["labels"][1:-1]
+
+      detokenized_gold = []
+      detokenized_predictions = []
+      current_actual_token = 0
+      for j, gold, pred in zip(input_ids, gold_label_ids, sentence_predictions):
+        # this means we're done
+        if current_actual_token == len(sentence["tokens"])-1: 
+          break
+
+        tok = self.tokenizer.decode(j)
+        if tok.startswith("##"): continue
+        if not sentence["tokens"][current_actual_token].startswith(tok): continue
+        detokenized_gold.append(LABEL_NAMES[gold])
+        detokenized_predictions.append(LABEL_NAMES[pred])
+        current_actual_token += 1
+
+      clean_predictions.append({"tokens": sentence["tokens"], "ner_tags": detokenized_predictions, "gold_tags": detokenized_gold})
+
+    with open(fname, "w") as f:
+      for sentence in clean_predictions:
+        for token, gold, tag in zip(sentence["tokens"], sentence["gold_tags"], sentence["ner_tags"]):
+          f.write(f"{token}\t{gold}\t{tag}\n")
+        f.write("\n")       
+
 
 if __name__ == "__main__":
   cfg = UNERConfig()
