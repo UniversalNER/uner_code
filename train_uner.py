@@ -77,8 +77,8 @@ class UNERTrainer():
     data_url = f"https://raw.githubusercontent.com/UniversalNER/{self.config.dataset_full_name}/master"
 
     download_file(f"{data_url}/{train_path}", train_path)
-    download_file(f"{data_url}/{dev_path}", train_path)
-    download_file(f"{data_url}/{test_path}", train_path)
+    download_file(f"{data_url}/{dev_path}", dev_path)
+    download_file(f"{data_url}/{test_path}", test_path)
 
     training_dataset = read_uner(train_path)
     validation_dataset = read_uner(dev_path)
