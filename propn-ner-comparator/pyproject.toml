@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "propn-ner-comparator"
+version = "0.1.0"
+description = ""
+authors = ["mr.Shu <mr@shu.io>"]
+readme = "README.md"
+packages = [{include = "propn_ner_comparator"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+conllu = "^4.5.3"
+typer = "^0.9.0"
+scikit-learn = "^1.3.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
