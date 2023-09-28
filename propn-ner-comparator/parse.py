@@ -3,10 +3,19 @@ from conllu import parse
 from pathlib import Path
 from sklearn.metrics import confusion_matrix, f1_score
 
+
+def remove_tokens_with_non_int_ids(sentences: list):
+    for sentence in sentences:
+        yield sentence.filter(id=lambda x: type(x) is int)
+
+
 def parse_compare(conllu_file: Path, iob_file: Path):
     
     conllu_sentences = parse(conllu_file.read_text())
     iob_sentences = parse(iob_file.read_text())
+
+    conllu_sentences = remove_tokens_with_non_int_ids(conllu_sentences)
+    iob_sentences = remove_tokens_with_non_int_ids(iob_sentences)
 
     n_tokens = 0
     n_misaligned = 0
